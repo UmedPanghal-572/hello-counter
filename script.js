@@ -8,16 +8,23 @@ const errorMessage = document.getElementById("error-message");
 // Define a list of variations of "hello"
 const helloVariations = ["hello", "helo", "hallo", "hullo", "hola", "hi", "hey", "allo", "hellooo"];
 
-// Function to check similarity using word list
+// Function to check similarity for a single word
 function isSimilarToHello(word) {
     return helloVariations.some((variation) =>
         word.toLowerCase().includes(variation)
     );
 }
 
+// Function to count occurrences of "hello" in a transcript
+function countHellosInTranscript(transcript) {
+    // Split the transcript into words and filter for "hello" matches
+    const words = transcript.split(/\s+/); // Split by spaces
+    return words.filter(isSimilarToHello).length; // Count matches
+}
+
 // Function to preprocess transcript
 function cleanTranscript(transcript) {
-    // Remove unnecessary spaces, punctuations, etc.
+    // Remove unnecessary spaces, punctuation, etc.
     return transcript.trim().toLowerCase();
 }
 
@@ -41,10 +48,12 @@ if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
         const confidence = result.confidence; // Get confidence score
         console.log(`Detected speech: "${transcript}" (Confidence: ${confidence})`);
 
-        // Match if confidence is high and the word is similar to "hello"
-        if (confidence > 0.6 && isSimilarToHello(transcript)) {
-            count++; // Increment counter
+        // Count and add the number of "hello" occurrences
+        if (confidence > 0.6) {
+            const helloCount = countHellosInTranscript(transcript); // Count occurrences
+            count += helloCount; // Increment counter
             counterDisplay.textContent = count; // Update display
+            console.log(`Detected ${helloCount} 'hello(s)' in transcript.`);
         }
     };
 
